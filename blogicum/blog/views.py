@@ -1,5 +1,6 @@
-from django.http import Http404
 from django.shortcuts import render
+from django.http import Http404
+
 
 posts = [
     {
@@ -44,22 +45,31 @@ posts = [
     },
 ]
 
-posts_by_id = {post['id']: post for post in posts}
-
 
 def index(request):
+    template = 'blog/index.html'
     context = {'posts': reversed(posts)}
-    return render(request, 'blog/index.html', context)
+    return render(request, template, context)
 
 
-def post_detail(request, post_id):
-    if post_id not in posts_by_id:
-        raise Http404(f'Пост {post_id} не найден! Проверьте, верно ли указан '
-                      'номер поста')
-    context = {'post': posts_by_id[post_id]}
-    return render(request, 'blog/detail.html', context)
+posts_dict = {post['id']: post for post in posts}
+
+
+def post_detail(request, id):
+    post = posts_dict.get(id)
+
+    if post is None:
+        raise Http404("Пост не найден")
+
+    template = 'blog/detail.html'
+    context = {'post': posts[id]}
+    return render(request, template, context)
 
 
 def category_posts(request, category_slug):
-    context = {'category': category_slug}
-    return render(request, 'blog/category.html', context)
+    template = 'blog/category.html'
+    filtered_posts = [
+        post for post in posts if post['category'] == category_slug
+    ]
+    context = {'posts': filtered_posts, 'category_slug': category_slug}
+    return render(request, template, context)

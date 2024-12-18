@@ -1,5 +1,5 @@
 import pytest
-from django.urls import NoReverseMatch, reverse
+from django.urls import reverse, NoReverseMatch
 
 
 def test_blog_urls():
